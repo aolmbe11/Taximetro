@@ -1,26 +1,30 @@
 package taximetro;
 
+import es.javiergarbedo.coordinateslib.CoordinatesConverter;
 import java.awt.Toolkit;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
+import javax.swing.JOptionPane;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.commons.validator.routines.CreditCardValidator;
 
 public class Taximetro extends javax.swing.JFrame {
-
+    
+    // Declaración de variables y constantes
+    final double TARIFAMINUTO = 0.50;
+    final double IVA = 0.21;
+    int contador = 0;
+    
+    // Creación de objetos Calendar y Fomatos que serán usados en varios botones.
     Calendar fechaHoraBajadaBandera;
     DateFormat formatoHora = DateFormat.getTimeInstance(DateFormat.MEDIUM);
     DateFormat formatoFecha = DateFormat.getDateInstance(DateFormat.MEDIUM);
-    
-
-    final float TARIFAMINUTO = 0.50F;
-    final float IVA = 0.53F;
-    int contador = 0;
 
     public Taximetro() {
         initComponents();
+        // Método para asignar un icono a la aplicación.
         setIcon();
 
     }
@@ -34,10 +38,10 @@ public class Taximetro extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        coordenadasLatitud = new javax.swing.JLabel();
         jT_Latitud = new javax.swing.JTextField();
         jT_Longitud = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
+        coordenadasLongitud = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -46,6 +50,7 @@ public class Taximetro extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         textAreaTicket = new javax.swing.JTextArea();
         jPanel4 = new javax.swing.JPanel();
+        etiquetaMapa = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jT_TarjetaCredito = new javax.swing.JTextField();
         botonComprobar = new javax.swing.JButton();
@@ -67,9 +72,9 @@ public class Taximetro extends javax.swing.JFrame {
 
         jLabel2.setText("Longitud:");
 
-        jLabel4.setText("36º 40 ' 46\"");
+        coordenadasLatitud.setText("latitud");
 
-        jLabel5.setText("-5º 26 ' 41\"");
+        coordenadasLongitud.setText("longitud");
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/taximetro/imagenes/GPS_inYourCar2.png"))); // NOI18N
 
@@ -88,8 +93,8 @@ public class Taximetro extends javax.swing.JFrame {
                     .addComponent(jT_Longitud, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5))
+                    .addComponent(coordenadasLongitud)
+                    .addComponent(coordenadasLatitud))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel6)
                 .addContainerGap())
@@ -103,13 +108,13 @@ public class Taximetro extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel4)
+                            .addComponent(coordenadasLatitud)
                             .addComponent(jT_Latitud, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
                             .addComponent(jT_Longitud, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))))
+                            .addComponent(coordenadasLongitud))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -129,7 +134,7 @@ public class Taximetro extends javax.swing.JFrame {
                 .addComponent(jLabel8)
                 .addGap(18, 18, 18)
                 .addComponent(jT_Destino, javax.swing.GroupLayout.PREFERRED_SIZE, 436, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(71, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,16 +158,27 @@ public class Taximetro extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 284, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(etiquetaMapa, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(17, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 273, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(etiquetaMapa, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel10.setText("Tarjeta de Crédito:");
 
         botonComprobar.setText("Comprobar");
+        botonComprobar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonComprobarActionPerformed(evt);
+            }
+        });
 
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel9.setText("Mapa");
@@ -188,34 +204,28 @@ public class Taximetro extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                        .addGap(18, 18, 18)
-                                        .addComponent(botonBanderaVerde)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(botonParar))
-                                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.LEADING))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel10)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addGap(45, 45, 45)
-                                        .addComponent(botonComprobar))
-                                    .addComponent(jT_TarjetaCredito, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jScrollPane1)))
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel9)
+                            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(19, 19, 19)
+                                .addComponent(botonBanderaVerde)
+                                .addGap(18, 18, 18)
+                                .addComponent(botonParar)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel10)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGap(45, 45, 45)
+                                    .addComponent(botonComprobar))
+                                .addComponent(jT_TarjetaCredito, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -225,22 +235,22 @@ public class Taximetro extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(botonBanderaVerde)
-                            .addComponent(botonParar))
-                        .addGap(29, 29, 29)
+                        .addComponent(jLabel7)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(botonParar)
+                            .addComponent(botonBanderaVerde))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel10)
@@ -248,7 +258,7 @@ public class Taximetro extends javax.swing.JFrame {
                         .addComponent(jT_TarjetaCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(botonComprobar)))
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -264,40 +274,86 @@ public class Taximetro extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonBanderaVerdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBanderaVerdeActionPerformed
+        
+        // Obtener hora de bajada de bandera.
         fechaHoraBajadaBandera = Calendar.getInstance();
         formatoHora.format(fechaHoraBajadaBandera.getTime());
 
+        // Recogida de datos y conversión a double.
         double latitud = Double.valueOf(jT_Latitud.getText());
         double longitud = Double.valueOf(jT_Longitud.getText());
+
+        // Convertir latitud y longitud a coordenadas.
+        CoordinatesConverter conversorCoordenadas = new CoordinatesConverter();
+        coordenadasLatitud.setText(conversorCoordenadas.decimalToDMS(latitud));
+        coordenadasLongitud.setText(conversorCoordenadas.decimalToDMS(longitud));
+
+        //Código para mostrar el mapa en un JLabel 
+        String origen = jT_Latitud.getText() + "," + jT_Longitud.getText();
         String destino = jT_Destino.getText();
+        
+        //Hay que sustituir los espacios por el carácter %20 para que se
+        //  interprete bien la URL que se generará
+        destino = destino.replaceAll(" ", "%20");
+        
+        // Mostrar mapa en el jLabel asignado para ello.
+        javax.swing.JLabel jLabelMapa = etiquetaMapa;
+        
+        // Asignar tamaño al mapa.
+        int tamHorizontal = 300;
+        int tamVertical = 300;      
+
+        //A partir de aquí no hace falta cambiar nada
+        try {
+            String txtDireccionImagenMapa = "http://maps.google.com/maps/api/staticmap?path="
+                    + origen + "|" + destino + "&size=" + tamHorizontal + "x" + tamVertical
+                    + "&language=ES&sensor=false";
+            System.out.println(txtDireccionImagenMapa);
+            java.awt.Toolkit toolkit = java.awt.Toolkit.getDefaultToolkit();
+            java.awt.Image imagenMapa = toolkit.getImage(new java.net.URL(txtDireccionImagenMapa));
+            jLabelMapa.setIcon(new javax.swing.ImageIcon(imagenMapa));
+        } catch (java.net.MalformedURLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "La dirección de imagen indicada no es correcta");
+        }
+
+
     }//GEN-LAST:event_botonBanderaVerdeActionPerformed
 
     private void botonPararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPararActionPerformed
+        
+        // Crear formato para el contador de ticket.
         DecimalFormat formatoTicket = new DecimalFormat("00000");
         contador++;
         String contadorAString = formatoTicket.format(contador);
+        
+        // Obtener hora de fin de trayecto
         Calendar horaFinTrayecto = Calendar.getInstance();
 
+        // Conversión de hh/mm/ss a milisegundos para obtener la duración del 
+        // trayecto.
         long miliSegundosBajadaBandera = fechaHoraBajadaBandera.getTimeInMillis();
         long miliSegundosFinTrayecto = horaFinTrayecto.getTimeInMillis();
-        long duracionTrayectoEnMilis = miliSegundosBajadaBandera - miliSegundosFinTrayecto;
+        long duracionTrayectoEnMilis = miliSegundosFinTrayecto - miliSegundosBajadaBandera;
 
-        // ¿ Cómo convertir milisegundos a hh/mm/ss?. 
-        Date duracionTrayecto = new Date(duracionTrayectoEnMilis);
-        //SimpleDateFormat formatoMilis = new SimpleDateFormat("HH:mm:ss");
-        DateFormat prueba = DateFormat.getTimeInstance();
+        // Formato para convertir milisegundos a hh/mm/ss     
+        String formatoMilis = DurationFormatUtils.formatDuration(duracionTrayectoEnMilis,"HH:mm:ss");
         
-        
-        //formatoMilis.format(duracionTrayecto)
-  
+        // Calcular importe.
+        NumberFormat formatoMoneda = NumberFormat.getCurrencyInstance();
+        double duracionTrayectoEnSeg = (duracionTrayectoEnMilis / 1000);
+        double importe = (duracionTrayectoEnSeg / 60) * TARIFAMINUTO; // Pasar milisegundos a minutos
+        double ivaImporte = importe * IVA;
+        double importeTotal = importe + ivaImporte;
+
+        // Mostrar datos del ticket en el textArea
         textAreaTicket.setText("TICKET\n");
         textAreaTicket.append("======\n");
         textAreaTicket.append("Nºticket: " + contadorAString);
@@ -305,11 +361,23 @@ public class Taximetro extends javax.swing.JFrame {
         textAreaTicket.append("\n\n");
         textAreaTicket.append("Hora bajada de bandera: " + formatoHora.format(fechaHoraBajadaBandera.getTime()));
         textAreaTicket.append("\nHora fin de trayecto: " + formatoHora.format(horaFinTrayecto.getTime()));
-        textAreaTicket.append("\nDuración de trayecto: " + prueba.format(duracionTrayecto));
-
-        
-
+        textAreaTicket.append("\nDuración de trayecto: " + formatoMilis);
+        textAreaTicket.append("\nTarifa por minuto: " + formatoMoneda.format(TARIFAMINUTO));
+        textAreaTicket.append("\n\n");
+        textAreaTicket.append("Importe: " + formatoMoneda.format(importe));
+        textAreaTicket.append("\nIVA: " + formatoMoneda.format(ivaImporte));
+        textAreaTicket.append("\nImporte total: " + formatoMoneda.format(importeTotal));
     }//GEN-LAST:event_botonPararActionPerformed
+
+    private void botonComprobarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonComprobarActionPerformed
+        
+        // Comprobar validez de la tarjeta de crédito
+        String numTarjeta = jT_TarjetaCredito.getText();
+        CreditCardValidator validadorTarjeta = new CreditCardValidator();
+        boolean tarjetaValida = validadorTarjeta.isValid(numTarjeta);
+        String mensaje = (tarjetaValida == true) ? "Tarjeta válida" : "Tarjeta inválida";
+        JOptionPane.showMessageDialog(null, mensaje);
+    }//GEN-LAST:event_botonComprobarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -350,12 +418,13 @@ public class Taximetro extends javax.swing.JFrame {
     private javax.swing.JButton botonBanderaVerde;
     private javax.swing.JButton botonComprobar;
     private javax.swing.JButton botonParar;
+    private javax.swing.JLabel coordenadasLatitud;
+    private javax.swing.JLabel coordenadasLongitud;
+    private javax.swing.JLabel etiquetaMapa;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -372,6 +441,7 @@ public class Taximetro extends javax.swing.JFrame {
     private javax.swing.JTextArea textAreaTicket;
     // End of variables declaration//GEN-END:variables
 
+    // Método para asignar un icono a la aplicación.
     private void setIcon() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("taxi14.png")));
     }
