@@ -27,6 +27,8 @@ public class Taximetro extends javax.swing.JFrame {
         // Método para asignar un icono a la aplicación.
         setIcon();
 
+        // Al inicar la ventana el botón parar está desabilitado.
+        botonParar.setEnabled(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -283,6 +285,12 @@ public class Taximetro extends javax.swing.JFrame {
 
     private void botonBanderaVerdeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBanderaVerdeActionPerformed
         
+        // Al bajar la bandera, el botón queda desabilitado.
+        botonBanderaVerde.setEnabled(false);
+        
+        // Al bajar la bandera, el botón parar se vuelve a habilitar.
+        botonParar.setEnabled(true);
+        
         // Obtener hora de bajada de bandera.
         fechaHoraBajadaBandera = Calendar.getInstance();
         formatoHora.format(fechaHoraBajadaBandera.getTime());
@@ -324,15 +332,28 @@ public class Taximetro extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "La dirección de imagen indicada no es correcta");
         }
 
+        // Crear formato para el contador de ticket.
+        DecimalFormat formatoTicket = new DecimalFormat("00000");
+        contador++;
+        String contadorAString = formatoTicket.format(contador);
+        
+        // Mostrar datos del ticket en el textArea
+        textAreaTicket.setText("TICKET\n");
+        textAreaTicket.append("======\n");
+        textAreaTicket.append("Nºticket: " + contadorAString);
+        textAreaTicket.append("\nFecha:" + formatoFecha.format(fechaHoraBajadaBandera.getTime()));
+        textAreaTicket.append("\n\n");
+        textAreaTicket.append("Hora bajada de bandera: " + formatoHora.format(fechaHoraBajadaBandera.getTime()));
 
     }//GEN-LAST:event_botonBanderaVerdeActionPerformed
 
     private void botonPararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonPararActionPerformed
         
-        // Crear formato para el contador de ticket.
-        DecimalFormat formatoTicket = new DecimalFormat("00000");
-        contador++;
-        String contadorAString = formatoTicket.format(contador);
+         // Al finalizar el trayecto, el botón parar está desabilitado.
+        botonParar.setEnabled(false);
+        
+        // Al finalizar el trayecto, el botón iniciar se vuelve a habilitar.
+        botonBanderaVerde.setEnabled(true);
         
         // Obtener hora de fin de trayecto
         Calendar horaFinTrayecto = Calendar.getInstance();
@@ -353,13 +374,8 @@ public class Taximetro extends javax.swing.JFrame {
         double ivaImporte = importe * IVA;
         double importeTotal = importe + ivaImporte;
 
-        // Mostrar datos del ticket en el textArea
-        textAreaTicket.setText("TICKET\n");
-        textAreaTicket.append("======\n");
-        textAreaTicket.append("Nºticket: " + contadorAString);
-        textAreaTicket.append("\nFecha:" + formatoFecha.format(fechaHoraBajadaBandera.getTime()));
-        textAreaTicket.append("\n\n");
-        textAreaTicket.append("Hora bajada de bandera: " + formatoHora.format(fechaHoraBajadaBandera.getTime()));
+        // Agregar datos del ticket en el textArea
+        
         textAreaTicket.append("\nHora fin de trayecto: " + formatoHora.format(horaFinTrayecto.getTime()));
         textAreaTicket.append("\nDuración de trayecto: " + formatoMilis);
         textAreaTicket.append("\nTarifa por minuto: " + formatoMoneda.format(TARIFAMINUTO));
@@ -376,7 +392,7 @@ public class Taximetro extends javax.swing.JFrame {
         CreditCardValidator validadorTarjeta = new CreditCardValidator();
         boolean tarjetaValida = validadorTarjeta.isValid(numTarjeta);
         String mensaje = (tarjetaValida == true) ? "Tarjeta válida" : "Tarjeta inválida";
-        JOptionPane.showMessageDialog(null, mensaje);
+        JOptionPane.showMessageDialog(this, mensaje);
     }//GEN-LAST:event_botonComprobarActionPerformed
 
     /**
@@ -441,7 +457,7 @@ public class Taximetro extends javax.swing.JFrame {
     private javax.swing.JTextArea textAreaTicket;
     // End of variables declaration//GEN-END:variables
 
-    // Método para asignar un icono a la aplicación.
+    
     private void setIcon() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("taxi14.png")));
     }
